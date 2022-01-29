@@ -19,9 +19,9 @@ DataTypeRepository constructDb({bool logStatements = false}) {
     final file = File('db.sqlite');
     return DataTypeRepository(NativeDatabase(file, logStatements: logStatements));
   }
-  // if (Platform.isWindows) {
-  //   final file = File('db.sqlite');
-  //   return Database(VMDatabase(file, logStatements: logStatements));
-  // }
+  if (Platform.isWindows) {
+    final file = File('db.sqlite');
+    return DataTypeRepository(NativeDatabase(file, logStatements: logStatements));
+  }
   return DataTypeRepository(NativeDatabase.memory(logStatements: logStatements));
 }
