@@ -1,5 +1,7 @@
+import 'package:aevex_demo/bloc/input_cubit/input_cubit.dart';
 import 'package:aevex_demo/pages/input_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
   runApp(const MyApp());
@@ -7,6 +9,7 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -14,7 +17,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const InputPage(title: 'Aevex Demo Input Page'),
+      home: BlocProvider(
+          create: (_) => InputCubit(InputStateInitial()),
+          child: const InputPage(title: 'Aevex Demo Input Page')),
     );
   }
 }

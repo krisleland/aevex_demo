@@ -1,6 +1,8 @@
+import 'package:aevex_demo/bloc/input_cubit/input_cubit.dart';
 import 'package:aevex_demo/pages/results_page.dart';
 import 'package:aevex_demo/widgets/input_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class InputPage extends StatefulWidget {
   const InputPage({Key? key, required this.title}) : super(key: key);
@@ -12,42 +14,60 @@ class InputPage extends StatefulWidget {
 }
 
 class _InputPageState extends State<InputPage> {
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _randomNumberController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              const InputWidget(label: 'Enter your first name'),
-              const InputWidget(label: 'Enter your last name'),
-              const InputWidget(label: 'Enter a random number'),
-              TextButton(onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) {
-                    return const ResultsPage();
-                  }),
-                );
-              }, child: const Text('Submit'))
-            ],
-          ),
+          child:
+              BlocConsumer<InputCubit, InputState>(listener: (context, state) {
+            if (state is InputStateSubmitSuccess) {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const ResultsPage()));
+            }
+          }, builder: (context, state) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                InputWidget(
+                  label: 'Enter your first name',
+                  controller: _firstNameController,
+                ),
+                InputWidget(
+                  label: 'Enter your last name',
+                  controller: _lastNameController,
+                ),
+                InputWidget(
+                  label: 'Enter a random number',
+                  controller: _randomNumberController,
+                ),
+                TextButton(
+                    onPressed: () => context.read<InputCubit>().submit(
+                        firstName: _firstNameController.text,
+                        lastName: _lastNameController.text,
+                        randomNumber: _randomNumberController.text),
+                    child: const Text('Submit')),
+                SizedBox(
+                  height: 40,
+                  width: 40,
+                  child: Visibility(
+                    visible: state is InputStateLoading,
+                    child: const CircularProgressIndicator(),
+                  ),
+                )
+              ],
+            );
+          }),
         ),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: _incrementCounter,
-      //   tooltip: 'Increment',
-      //   child: const Icon(Icons.add),
-      // ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

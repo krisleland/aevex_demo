@@ -1,4 +1,5 @@
 import 'package:aevex_demo/models/data_type.dart';
+import 'package:aevex_demo/repositories/data_type_repository.dart';
 import 'package:flutter/material.dart';
 
 class ResultsPage extends StatefulWidget {
@@ -10,18 +11,31 @@ class ResultsPage extends StatefulWidget {
 
 class _ResultsPageState extends State<ResultsPage> {
   int count = 0;
-  final List<DataType> data = [];
+  final repo = DataTypeRepository();
+  List<DataType> data = [];
+  bool moreResults = true;
 
-  _fetchData() async {
-    await Future.delayed(const Duration(seconds: 1));
+  @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  void _fetchData() async {
+    var newData = await repo.getAll();
     setState(() {
-      data.addAll(List.generate(
-          20,
-          (index) => DataType(
-              firstName: 'firstName${index + (20 * count)}',
-              lastName: 'lastName${index + (20 * count)}',
-              randomNumber: (index + (20 * count)).toString())));
-      count += 1;
+      data = newData.values.toList();
+    });
+  }
+
+  void _fetchMoreData() async {
+    var moreData = await repo.getAll(id: data.last.id);
+    setState(() {
+      if (moreData.isEmpty) {
+        moreResults = false;
+      } else {
+        data.addAll(moreData.values);
+      }
     });
   }
 
@@ -57,17 +71,17 @@ class _ResultsPageState extends State<ResultsPage> {
                                 ]),
                           ));
                     } else {
-                      _fetchData();
+                      _fetchMoreData();
                       return SizedBox(
                         height: 80,
                         child: Card(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
+                            children: [
                               SizedBox(
-                                  height: 40,
-                                  width: 40,
-                                  child: CircularProgressIndicator())
+                                  child: moreResults
+                                      ? const CircularProgressIndicator()
+                                      : const Text('No more results'))
                             ],
                           ),
                         ),
