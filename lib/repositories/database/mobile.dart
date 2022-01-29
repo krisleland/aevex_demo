@@ -10,18 +10,21 @@ DataTypeRepository constructDb({bool logStatements = false}) {
   if (Platform.isIOS || Platform.isAndroid) {
     final executor = LazyDatabase(() async {
       final dataDir = await paths.getApplicationDocumentsDirectory();
-      final dbFile = File(p.join(dataDir.path, 'db.sqlite'));
+      final dbFile = File(p.join(dataDir.path, 'db.sqlite'))..create();
       return NativeDatabase(dbFile, logStatements: logStatements);
     });
     return DataTypeRepository(executor);
   }
   if (Platform.isMacOS || Platform.isLinux) {
     final file = File('db.sqlite');
-    return DataTypeRepository(NativeDatabase(file, logStatements: logStatements));
+    return DataTypeRepository(
+        NativeDatabase(file, logStatements: logStatements));
   }
   if (Platform.isWindows) {
     final file = File('db.sqlite');
-    return DataTypeRepository(NativeDatabase(file, logStatements: logStatements));
+    return DataTypeRepository(
+        NativeDatabase(file, logStatements: logStatements));
   }
-  return DataTypeRepository(NativeDatabase.memory(logStatements: logStatements));
+  return DataTypeRepository(
+      NativeDatabase.memory(logStatements: logStatements));
 }
