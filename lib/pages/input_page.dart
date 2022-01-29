@@ -1,3 +1,4 @@
+import 'package:aevex_demo/pages/results_page.dart';
 import 'package:aevex_demo/widgets/input_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -26,8 +27,18 @@ class _InputPageState extends State<InputPage> {
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: const <Widget>[
-              InputWidget(label: 'Enter your username'),
+            children: <Widget>[
+              const InputWidget(label: 'Enter your first name'),
+              const InputWidget(label: 'Enter your last name'),
+              const InputWidget(label: 'Enter a random number'),
+              TextButton(onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) {
+                    return const ResultsPage();
+                  }),
+                );
+              }, child: const Text('Submit'))
             ],
           ),
         ),
