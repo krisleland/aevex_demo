@@ -18,6 +18,13 @@ class _InputPageState extends State<InputPage> {
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _randomNumberController = TextEditingController();
 
+  void _submit() {
+    context.read<InputCubit>().submit(
+        firstName: _firstNameController.text,
+        lastName: _lastNameController.text,
+        randomNumber: _randomNumberController.text);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,13 +55,12 @@ class _InputPageState extends State<InputPage> {
                 InputWidget(
                   label: 'Enter a random number',
                   controller: _randomNumberController,
+                  textInputAction: TextInputAction.done,
+                  textInputType: TextInputType.number,
+                  onFieldSubmitted: (val) => _submit(),
                 ),
                 TextButton(
-                    onPressed: () => context.read<InputCubit>().submit(
-                        firstName: _firstNameController.text,
-                        lastName: _lastNameController.text,
-                        randomNumber: _randomNumberController.text),
-                    child: const Text('Submit')),
+                    onPressed: () => _submit(), child: const Text('Submit')),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -63,9 +69,10 @@ class _InputPageState extends State<InputPage> {
                             context.read<InputCubit>().addHundred(),
                         child: const Text('Add 100 entries')),
                     TextButton(
-                        onPressed: () =>
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) => const ResultsPage())),
+                        onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const ResultsPage())),
                         child: const Text('View results'))
                   ],
                 ),
