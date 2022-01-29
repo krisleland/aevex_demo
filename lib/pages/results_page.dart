@@ -1,6 +1,7 @@
-import 'package:aevex_demo/models/data_type.dart';
 import 'package:aevex_demo/repositories/data_type_repository.dart';
 import 'package:flutter/material.dart';
+
+import '../main.dart';
 
 class ResultsPage extends StatefulWidget {
   const ResultsPage({Key? key}) : super(key: key);
@@ -10,9 +11,8 @@ class ResultsPage extends StatefulWidget {
 }
 
 class _ResultsPageState extends State<ResultsPage> {
-  int count = 0;
-  final repo = DataTypeRepository();
-  List<DataType> data = [];
+  final repo = getIt.get<DataTypeRepository>();
+  List<Entry> data = [];
   bool moreResults = true;
 
   @override
@@ -24,19 +24,21 @@ class _ResultsPageState extends State<ResultsPage> {
   void _fetchData() async {
     var newData = await repo.getAll();
     setState(() {
-      data = newData.values.toList();
+      data = newData;
     });
   }
 
   void _fetchMoreData() async {
-    var moreData = await repo.getAll(id: data.last.id);
-    setState(() {
-      if (moreData.isEmpty) {
-        moreResults = false;
-      } else {
-        data.addAll(moreData.values);
-      }
-    });
+    if (mounted && moreResults) {
+      var moreData = await repo.getAll(offset: data.length);
+      setState(() {
+        if (moreData.isEmpty) {
+          moreResults = false;
+        } else {
+          data.addAll(moreData);
+        }
+      });
+    }
   }
 
   @override

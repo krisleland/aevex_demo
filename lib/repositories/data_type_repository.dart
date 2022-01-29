@@ -1,56 +1,49 @@
-import 'package:aevex_demo/models/data_type.dart';
 import 'package:aevex_demo/repositories/repository.dart';
+import 'package:drift/drift.dart';
 
-class DataTypeRepository implements Repository<DataType> {
+export 'database/shared.dart';
 
-  int count = 0;
+part 'data_type_repository.g.dart';
 
-  final Map<int, DataType> data = {};
+@DataClassName('Entry')
+class Entries extends Table {
+  IntColumn get id => integer().autoIncrement()();
 
-  static final DataTypeRepository _repository = DataTypeRepository._internal();
-  factory DataTypeRepository() {
-    return _repository;
-  }
+  TextColumn get firstName => text()();
 
-  DataTypeRepository._internal();
+  TextColumn get lastName => text()();
+
+  TextColumn get randomNumber => text()();
+}
+
+@DriftDatabase(tables: [Entries])
+class DataTypeRepository extends _$DataTypeRepository
+    implements Repository<Entry> {
+
+  DataTypeRepository(QueryExecutor e) : super(e);
 
   @override
-  Future<DataType?> get({required int id}) async {
+  Future<Entry?> get({required int id}) async {
+    return (select(entries)..where((t) => t.id.equals(id))).getSingle();
+  }
+
+  @override
+  Future<List<Entry>> getAll({int? offset}) async {
     await Future.delayed(const Duration(milliseconds: 500));
-    if (id < 0 || id >= data.length) {
-      return null;
-    } else {
-      return data[id];
-    }
+    return (select(entries)..limit(20, offset: offset)).get();
   }
 
   @override
-  Future<Map<int, DataType>> getAll({int? id}) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (id != null) {
-      return {};
-    }
-    return data;
+  Future<int> insert({required UpdateCompanion<Entry> item}) async {
+    return into(entries).insert(item);
+  }
+
+  Future<void> insertAll({required List<UpdateCompanion<Entry>> items}) async {
+    await batch((batch) {
+      batch.insertAll(entries, items);
+    });
   }
 
   @override
-  Future<DataType> insert({required DataType item}) async {
-    var newItem = item.copyWith(id: count);
-    count += 1;
-    data[newItem.id] = newItem;
-    return newItem;
-  }
-
-  Future<List<DataType>> insertAll({required List<DataType> items}) async {
-    if (items.isEmpty) {
-      return [];
-    }
-    for (int i = 0; i < items.length; i++) {
-      var newItem = items[i].copyWith(id: count);
-      count += 1;
-      data[newItem.id] = newItem;
-      items[i] = newItem;
-    }
-    return items;
-  }
+  int get schemaVersion => 1;
 }

@@ -61,7 +61,12 @@ class _InputPageState extends State<InputPage> {
                     TextButton(
                         onPressed: () =>
                             context.read<InputCubit>().addHundred(),
-                        child: const Text('Add 100 entries'))
+                        child: const Text('Add 100 entries')),
+                    TextButton(
+                        onPressed: () =>
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) => const ResultsPage())),
+                        child: const Text('View results'))
                   ],
                 ),
                 SizedBox(

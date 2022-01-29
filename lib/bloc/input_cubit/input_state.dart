@@ -9,11 +9,4 @@ class InputStateInitial extends InputState {}
 
 class InputStateLoading extends InputState {}
 
-class InputStateSubmitSuccess extends InputState {
-  final DataType data;
-
-  InputStateSubmitSuccess({required this.data});
-
-  @override
-  List<Object?> get props => [data];
-}
+class InputStateSubmitSuccess extends InputState {}

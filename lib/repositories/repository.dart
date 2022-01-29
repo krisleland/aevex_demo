@@ -1,5 +1,7 @@
+import 'package:drift/drift.dart';
+
 abstract class Repository<T> {
-  Future<T> insert({required T item});
-  Future<Map<int, T>> getAll();
+  Future<int> insert({required UpdateCompanion<T> item});
+  Future<List<T>> getAll();
   Future<T?> get({required int id});
 }
