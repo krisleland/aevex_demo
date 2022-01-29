@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
 GetIt getIt = GetIt.instance;
+int limit = 20;
 
 void main() {
   getIt.registerSingleton<DataTypeRepository>(constructDb());

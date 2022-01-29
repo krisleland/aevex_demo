@@ -13,7 +13,7 @@ class ResultsCubit extends Cubit<ResultsState> {
 
   _getInitialData() async {
     var data = await repo.getAll();
-    emit(ResultsStateLoaded(entries: data, moreResults: data.length == 20));
+    emit(ResultsStateLoaded(entries: data, moreResults: data.length == limit));
   }
 
   void getMoreData() async {
@@ -23,7 +23,7 @@ class ResultsCubit extends Cubit<ResultsState> {
       var data = await repo.getAll(offset: state.entries.length);
       emit(ResultsStateLoaded(
           entries: List.from(state.entries)..addAll(data),
-          moreResults: data.length == 20));
+          moreResults: data.length == limit));
     }
   }
 }

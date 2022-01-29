@@ -1,3 +1,4 @@
+import 'package:aevex_demo/main.dart';
 import 'package:aevex_demo/repositories/repository.dart';
 import 'package:drift/drift.dart';
 
@@ -30,7 +31,7 @@ class DataTypeRepository extends _$DataTypeRepository
   @override
   Future<List<Entry>> getAll({int? offset}) async {
     await Future.delayed(const Duration(milliseconds: 500));
-    return (select(entries)..limit(20, offset: offset)).get();
+    return (select(entries)..limit(limit, offset: offset)).get();
   }
 
   @override
