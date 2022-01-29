@@ -9,13 +9,8 @@ class ResultsPage extends StatefulWidget {
 }
 
 class _ResultsPageState extends State<ResultsPage> {
-  int count = 1;
-  final List<DataType> data = List.generate(
-      20,
-      (index) => DataType(
-          firstName: 'firstName$index',
-          lastName: 'lastName$index',
-          randomNumber: index.toString()));
+  int count = 0;
+  final List<DataType> data = [];
 
   _fetchData() async {
     await Future.delayed(const Duration(seconds: 1));
