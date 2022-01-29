@@ -55,6 +55,15 @@ class _InputPageState extends State<InputPage> {
                         lastName: _lastNameController.text,
                         randomNumber: _randomNumberController.text),
                     child: const Text('Submit')),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                        onPressed: () =>
+                            context.read<InputCubit>().addHundred(),
+                        child: const Text('Add 100 entries'))
+                  ],
+                ),
                 SizedBox(
                   height: 40,
                   width: 40,

@@ -10,13 +10,24 @@ class InputCubit extends Cubit<InputState> {
 
   final repo = DataTypeRepository();
 
-  void submit({required String firstName,
-    required String lastName,
-    required String randomNumber}) async {
+  void submit(
+      {required String firstName,
+      required String lastName,
+      required String randomNumber}) async {
     emit(InputStateLoading());
     var data = DataType(
         firstName: firstName, lastName: lastName, randomNumber: randomNumber);
     var newData = await repo.insert(item: data);
     emit(InputStateSubmitSuccess(data: newData));
+  }
+
+  void addHundred() {
+    var data = List.generate(
+        100,
+        (index) => DataType(
+            firstName: 'firstName$index',
+            lastName: 'lastName$index',
+            randomNumber: index.toString()));
+    repo.insertAll(items: data);
   }
 }

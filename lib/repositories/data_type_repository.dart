@@ -40,4 +40,17 @@ class DataTypeRepository implements Repository<DataType> {
     data[newItem.id] = newItem;
     return newItem;
   }
+
+  Future<List<DataType>> insertAll({required List<DataType> items}) async {
+    if (items.isEmpty) {
+      return [];
+    }
+    for (int i = 0; i < items.length; i++) {
+      var newItem = items[i].copyWith(id: count);
+      count += 1;
+      data[newItem.id] = newItem;
+      items[i] = newItem;
+    }
+    return items;
+  }
 }
