@@ -1,7 +1,7 @@
-import 'package:aevex_demo/repositories/data_type_repository.dart';
+import 'package:aevex_demo/bloc/results_cubit/results_cubit.dart';
+import 'package:aevex_demo/bloc/results_cubit/results_state.dart';
 import 'package:flutter/material.dart';
-
-import '../main.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ResultsPage extends StatefulWidget {
   const ResultsPage({Key? key}) : super(key: key);
@@ -11,88 +11,69 @@ class ResultsPage extends StatefulWidget {
 }
 
 class _ResultsPageState extends State<ResultsPage> {
-  final repo = getIt.get<DataTypeRepository>();
-  List<Entry> data = [];
-  bool moreResults = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchData();
-  }
-
-  void _fetchData() async {
-    var newData = await repo.getAll();
-    setState(() {
-      data = newData;
-    });
-  }
-
-  void _fetchMoreData() async {
-    if (mounted && moreResults) {
-      var moreData = await repo.getAll(offset: data.length);
-      setState(() {
-        if (moreData.isEmpty) {
-          moreResults = false;
-        } else {
-          data.addAll(moreData);
-        }
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Back')),
-            const SizedBox(
-              height: 8,
+    return BlocProvider(
+      create: (_) => ResultsCubit(),
+      child: Builder(
+        builder: (context) {
+          return Scaffold(
+            body: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Back')),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Expanded(
+                    child: BlocBuilder<ResultsCubit, ResultsState>(
+                      builder: (context, state) {
+                        return ListView.builder(
+                            itemCount: state.entries.length + 1,
+                            itemBuilder: (context, index) {
+                              if (index < state.entries.length) {
+                                var dataType = state.entries[index];
+                                return SizedBox(
+                                    height: 80,
+                                    child: Card(
+                                      child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Text(dataType.firstName),
+                                            Text(dataType.lastName),
+                                            Text(dataType.randomNumber),
+                                          ]),
+                                    ));
+                              } else {
+                                context.read<ResultsCubit>().getMoreData();
+                                return SizedBox(
+                                  height: 80,
+                                  child: Card(
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        SizedBox(
+                                            child: state.moreResults
+                                                ? const CircularProgressIndicator()
+                                                : const Text('No more results'))
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }
+                            });
+                      }
+                    ),
+                  )
+                ],
+              ),
             ),
-            Expanded(
-              child: ListView.builder(
-                  itemCount: data.length + 1,
-                  itemBuilder: (context, index) {
-                    if (index < data.length) {
-                      var dataType = data[index];
-                      return SizedBox(
-                          height: 80,
-                          child: Card(
-                            child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(dataType.firstName),
-                                  Text(dataType.lastName),
-                                  Text(dataType.randomNumber),
-                                ]),
-                          ));
-                    } else {
-                      _fetchMoreData();
-                      return SizedBox(
-                        height: 80,
-                        child: Card(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SizedBox(
-                                  child: moreResults
-                                      ? const CircularProgressIndicator()
-                                      : const Text('No more results'))
-                            ],
-                          ),
-                        ),
-                      );
-                    }
-                  }),
-            )
-          ],
-        ),
+          );
+        }
       ),
     );
   }
